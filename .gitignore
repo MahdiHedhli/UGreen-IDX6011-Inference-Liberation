@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+client.env
+client.header
+auth.conf
+state/
+__pycache__/
+*.pyc
+*.log
+.DS_Store

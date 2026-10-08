@@ -1,0 +1,24 @@
+# Install outside the repository on a persistent, root-restricted NAS volume.
+# Do not create a second host-network Tailscale instance on an enrolled NAS.
+services:
+  tailscale:
+    image: ${TAILSCALE_IMAGE:?Set TAILSCALE_IMAGE to a reviewed image digest in .env}
+    container_name: tailscale
+    hostname: ${NAS_TS_HOSTNAME:-ugreen-inference}
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      TS_HOSTNAME: ${NAS_TS_HOSTNAME:-ugreen-inference}
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_AUTH_ONCE: "true"
+      TS_USERSPACE: "false"
+      TS_ACCEPT_DNS: "false"
+    volumes:
+      - ./state:/var/lib/tailscale
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    # No auth key in this file: complete the browser login from container logs.
+    # No ports, privileged mode, Docker socket, exit node, or subnet routes.

@@ -1,0 +1,28 @@
+[Unit]
+Description=Authenticated proxy for UGREEN inference
+After=network.target
+
+[Service]
+Type=simple
+User=ug-inference
+Group=ug-inference
+RuntimeDirectory=ugreen-inference
+RuntimeDirectoryMode=0700
+ExecStartPre=/usr/sbin/nginx -t -q -e stderr -p /run/ugreen-inference/ -c /etc/ugreen-inference/nginx.conf
+ExecStart=/usr/sbin/nginx -e stderr -p /run/ugreen-inference/ -c /etc/ugreen-inference/nginx.conf -g "daemon off;"
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGQUIT
+TimeoutStopSec=30
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target
